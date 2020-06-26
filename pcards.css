@@ -4,38 +4,18 @@
 /* pcblock */
 
 .pcblock {
-	border: 1px dotted #ddd;
+	border: 1px dotted #ccc;
 	border-radius: 2px;
 	font-family: "arial narrow", arial, helvetica, sans-serif;
-}
-.pcblock-left {
-	float: left;
-	display: block;
-}
-.pcblock-right {
-	float: right;
-	display: block;
-}
-.pcblock-centre {
-	display: block;
-}
-.pcblock-inline {
 	display: inline-block;
-}
-
-/* pccard */
-
-.pcblock-left .pccard, .pcblock-right .pccard, .pcblock-centre .pccard {
-	display: inline-block;
-	width: 3em;
-	height: 5em;
+	line-height: 1em;
 }
 .pccard {
 	display: inline-block;
-	padding: 2px 3px 4px 3px;
+	padding: 0px 3px 2px 3px;
 	margin: 1px;
 	border-radius: 2px;
-	font-size: 12pt;
+	font-size: .7em;
 	cursor: default;
 	border-width: 1px;
 	border-style: solid;
@@ -84,6 +64,14 @@
 }
 
 /* options page */
+.pcards-message {
+	background-color: #fff;
+	box-shadow: 1px 1px 1px #ddd;
+}
+.pcards-message p {
+	padding-left: 3em;
+	padding-right: 2em;
+}
 .pcards-th {
 	border-bottom: 1px solid #555;
 	padding-bottom: 0;
@@ -97,9 +85,23 @@
 	width: 24%;
 	margin-bottom: 10px;
 }
+@media screen and (max-width: 750px) {
+	.pcards-options {
+		width: 32%;
+	}
+}
+@media screen and (max-width: 650px) {
+	.pcards-options {
+		width: 48%;
+	}
+}
 .pcards-colour-label {
 	font-size: .8em;
 	color: #999;
 	font-style: italic;
 	margin-left: 2em;
+}
+.pcards-font-credit {
+	text-align: right;
+	font-style: italic;
 }

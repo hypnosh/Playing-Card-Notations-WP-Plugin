@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Playing Card Notations (PCN)
  * Plugin URI: https://www.recaptured.in/new-wordpress-plugin-playing-card-notations
- * Description: Easily display playing card notations in your blog
+ * Description: Display rich playing card notations in your blog through a simple shortcode
  * Version: 1.2
  * Author: Amit Sharma
  * Author URI: https://www.recaptured.in/
@@ -12,37 +12,7 @@ add_shortcode('pcards', 'pcards_add_playing_card_notations');
 add_shortcode('pcn', 'pcards_add_playing_card_notations');
 
 function pcards_add_playing_card_notations($atts, $content = null) {
-	$pcards_colours = esc_attr(get_option('pcards-suite-colours'));
-	$pcards_style = esc_attr(get_option('pcards-suite-style'));
-
-	$a = shortcode_atts( array(
-			'layout'		=> 'inline',
-			'style'			=> ($pcards_colours . "-" . $pcards_style),
-		), $atts);
-
-
-	/*
-		A K Q J T/10 9 8 7 6 5 4 3 2
-		s c h d		&clubs;
-		&hearts;
-		&diams;
-		&#x1f0a1;
-	*/
-
-	$layout = $a['layout'];
-	$style = $a['style'];
-
-	// rich cards, non-inline	
-	$style_codes = [
-		"st1"		=> "brw",
-		"st2"		=> "brr",
-		"st3"		=> "brgpw",
-		"st4"		=> "brgpr",
-		"default"	=> "brw",
-		"reverse"	=> "brr",
-		"alternate"	=> "brgpw",
-		"altrev"	=> "brgpr",
-	];
+	
 	$suites_symbols = [
 		"s" => "-&/",
 		"c" => "-*/",
@@ -109,13 +79,12 @@ function pcards_add_playing_card_notations($atts, $content = null) {
 				"</span>";
 	}
 	$out = implode("", $o);
-	// foreach ($suites as $key => $value) {
-	// 	// replace the suite keys with suite code
-	// 	$out = str_replace($key, $value, $out);
-	// }
-	// $style = $style_codes[$style];
+	
 	$pcards_font = esc_attr(get_option('pcards-font'));
-	$out = "<span class='pcblock pcblock-" . $layout . " pcblock-" . $style .  " pcblock-font-" . $pcards_font . "'>" . $out . "</span>";
+	$pcards_colours = esc_attr(get_option('pcards-suite-colours'));
+	$pcards_style = esc_attr(get_option('pcards-suite-style'));
+
+	$out = "<span class='pcblock pcblock-" . $layout . " pcblock-" . $pcards_colours . "-" . $pcards_style .  " pcblock-font-" . $pcards_font . "'>" . $out . "</span>";
 	return $out;
 } // pcards_add_playing_card_notations
 
@@ -182,9 +151,13 @@ function pcards_settings_page() {
 					<th scopr="row" class="pcards-th">How to Use PCN</th>
 				</tr>
 				<tr valign="top">
-					<td>
+					<td class="pcards-message">
 						<p>Thanks for installing PCN!</p>
-						<p>
+						<p>You can use the shortcodes <code>pcards</code> or <code>pcn</code> to display cards and card hands in your blog&rsquo;s content. The standard card notations of (A-J, 10 or T, 9-2) followed by suite letter (s for spades, c for clubs, h for hearts and d for diamonds) work.</p>
+						<p>For example, Ace of hearts, two of clubs, and seven of spades can be represented thus: <code>[pcn]Ah2c7s[/pcn]</code>. This appears as <?php echo do_shortcode("[pcn]Ah2c7s[/pcn]"); ?>.</p>
+						<p>The appearance of the shortcode's output can be configured by the settings below.</p>
+						<p>Hope you enjoy using this plugin. Do let me know what you think, and suggestions for improvement on <a href="https://www.recaptured.in/new-wordpress-plugin-playing-card-notations">this link</a>.</p>
+						<p><br/>- Amit Sharma<br/><a href="https://www.recaptured.in/">www.recaptured.in</a></p>
 					</td>
 				</tr>
 				<tr valign="top">
@@ -214,6 +187,7 @@ function pcards_settings_page() {
 						<span class="pcards-options">
 						<input type="radio" name="pcards-font" value="IBM_Plex_Sans_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "IBM_Plex_Sans_Condensed") echo "checked"; ?>><label for="IBM_Plex_Sans_Condensed" class="pcblock-font-option pcblock-font-IBM_Plex_Sans_Condensed">IBM Plex Sans Condensed</label>
 						</span>
+						<p class="pcards-font-credit">Fonts powered by <a href="https://fonts.google.com/">Google Fonts</a>.</p>
 					</td>
 				</tr>
 				<tr valign="top">
