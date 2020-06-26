@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Playing Card Notations
- * Plugin URI: https://www.recaptured.in/playing-card-notations
+ * Plugin Name: Playing Card Notations (PCN)
+ * Plugin URI: https://www.recaptured.in/new-wordpress-plugin-playing-card-notations
  * Description: Easily display playing card notations in your blog
- * Version: 1.0
+ * Version: 1.2
  * Author: Amit Sharma
  * Author URI: https://www.recaptured.in/
  */
@@ -23,8 +23,7 @@ function pcards_add_playing_card_notations($atts, $content = null) {
 
 	/*
 		A K Q J T/10 9 8 7 6 5 4 3 2
-		s c h d
-:}>		&clubs;
+		s c h d		&clubs;
 		&hearts;
 		&diams;
 		&#x1f0a1;
@@ -86,6 +85,10 @@ function pcards_add_playing_card_notations($atts, $content = null) {
 	// segregate as cards
 	$cards = explode("/", $content);
 	array_pop($cards);
+
+	if (!is_array($cards) or count($cards) == 0) { // no valid suite found
+		return "[invalid notations]";
+	}
 	foreach ($cards as $key => $value) {
 		$card_exploded = explode("-", $value);
 		$rank = $card_exploded[0];
@@ -93,6 +96,9 @@ function pcards_add_playing_card_notations($atts, $content = null) {
 
 		$suite = $suites[$card_exploded[1]];
 		$rank_name = ucwords($rank_names[$rank]);
+		if (!array_key_exists($rank, $rank_names)) { // invalid rank/suite characters found
+			return "[invalid notations]";
+		}
 		$suite_name = ucwords($suite_names[$card_exploded[1]]);
 
 		$o[] = "<span class='pccard pccard-" . $suite . " pccard-" . $layout .
@@ -137,7 +143,7 @@ function pcards_enqueue_styles() {
 
 add_action( 'admin_enqueue_scripts', 'pcards_admin_enqueue_styles' );
 function pcards_admin_enqueue_styles() {
-	wp_enqueue_scripts( 'pcards_script_admin', plugins_url('pcards-admin.js', __FILE__) );
+	wp_enqueue_script( 'pcards_script_admin', plugins_url('pcards-admin.js', __FILE__) );
 	wp_enqueue_style( 'pcards_style', plugins_url('pcards.css', __FILE__) );
 	wp_enqueue_style( 'pcards-roboto-condensed', "//fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap" );
 	wp_enqueue_style( 'pcards-fira-sans-condensed', "//fonts.googleapis.com/css2?family=Fira+Sans+Condensed:wght@500&display=swap" );
@@ -173,76 +179,80 @@ function pcards_settings_page() {
 			?>
 			<table class="form-table">
 				<tr valign="top">
-					<th scope="row">Font</th>
+					<th scopr="row" class="pcards-th">How to Use PCN</th>
+				</tr>
+				<tr valign="top">
+					<td>
+						<p>Thanks for installing PCN!</p>
+						<p>
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row" class="pcards-th">Font</th>
 				</tr>
 				<tr valign="top">
 					<td>
 						<!-- font options -->
-<span class="pcards-options">
-<input type="radio" name="pcards-font" value="Roboto_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "Roboto_Condensed") echo "checked"; ?>><label for="Roboto_Condensed" class="pccard pcblock-font-Roboto_Condensed">Roboto Condensed</label>
-</span>
-<span class="pcards-options">
-<input type="radio" name="pcards-font" value="Fira_Sans_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "Fira_Sans_Condensed") echo "checked"; ?>><label for="Fira_Sans_Condensed" class="pccard pcblock-font-Fira_Sans_Condensed">Fira Sans Condensed</label>
-</span>
-<span class="pcards-options">
-<input type="radio" name="pcards-font" value="Open_Sans_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "Open_Sans_Condensed") echo "checked"; ?>><label for="Open_Sans_Condensed" class="pccard pcblock-font-Open_Sans_Condensed">Open Sans Condensed</label>
-</span>
-<span class="pcards-options">
-<input type="radio" name="pcards-font" value="Barlow_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "Barlow_Condensed") echo "checked"; ?>><label for="Barlow_Condensed" class="pccard pcblock-font-Barlow_Condensed">Barlow Condensed</label>
-</span>
-<span class="pcards-options">
-<input type="radio" name="pcards-font" value="Ubuntu_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "Ubuntu_Condensed") echo "checked"; ?>><label for="Ubuntu_Condensed" class="pccard pcblock-font-Ubuntu_Condensed">Ubuntu Condensed</label>
-</span>
-<span class="pcards-options">
-<input type="radio" name="pcards-font" value="Asap_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "Asap_Condensed") echo "checked"; ?>><label for="Asap_Condensed" class="pccard pcblock-font-Asap_Condensed">Asap Condensed</label>
-</span>
-<span class="pcards-options">
-<input type="radio" name="pcards-font" value="IBM_Plex_Sans_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "IBM_Plex_Sans_Condensed") echo "checked"; ?>><label for="IBM_Plex_Sans_Condensed" class="pccard pcblock-font-IBM_Plex_Sans_Condensed">IBM Plex Sans Condensed</label>
-</span>
-
-
-
+						<span class="pcards-options">
+						<input type="radio" name="pcards-font" value="Roboto_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "Roboto_Condensed") echo "checked"; ?>><label for="Roboto_Condensed" class="pcblock-font-option pcblock-font-Roboto_Condensed">Roboto Condensed</label>
+						</span>
+						<span class="pcards-options">
+						<input type="radio" name="pcards-font" value="Fira_Sans_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "Fira_Sans_Condensed") echo "checked"; ?>><label for="Fira_Sans_Condensed" class="pcblock-font-option pcblock-font-Fira_Sans_Condensed">Fira Sans Condensed</label>
+						</span>
+						<span class="pcards-options">
+						<input type="radio" name="pcards-font" value="Open_Sans_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "Open_Sans_Condensed") echo "checked"; ?>><label for="Open_Sans_Condensed" class="pcblock-font-option pcblock-font-Open_Sans_Condensed">Open Sans Condensed</label>
+						</span>
+						<span class="pcards-options">
+						<input type="radio" name="pcards-font" value="Barlow_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "Barlow_Condensed") echo "checked"; ?>><label for="Barlow_Condensed" class="pcblock-font-option pcblock-font-Barlow_Condensed">Barlow Condensed</label>
+						</span>
+						<span class="pcards-options">
+						<input type="radio" name="pcards-font" value="Ubuntu_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "Ubuntu_Condensed") echo "checked"; ?>><label for="Ubuntu_Condensed" class="pcblock-font-option pcblock-font-Ubuntu_Condensed">Ubuntu Condensed</label>
+						</span>
+						<span class="pcards-options">
+						<input type="radio" name="pcards-font" value="Asap_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "Asap_Condensed") echo "checked"; ?>><label for="Asap_Condensed" class="pcblock-font-option pcblock-font-Asap_Condensed">Asap Condensed</label>
+						</span>
+						<span class="pcards-options">
+						<input type="radio" name="pcards-font" value="IBM_Plex_Sans_Condensed" <?php if(esc_attr(get_option('pcards-font')) == "IBM_Plex_Sans_Condensed") echo "checked"; ?>><label for="IBM_Plex_Sans_Condensed" class="pcblock-font-option pcblock-font-IBM_Plex_Sans_Condensed">IBM Plex Sans Condensed</label>
+						</span>
 					</td>
 				</tr>
 				<tr valign="top">
-					<th scope="row">Colours</th>
+					<th scope="row" class="pcards-th">Colours</th>
 				</tr>
 				<tr valign="top">
 					<td>
 						<!-- colour options -->
-<span class="pcards-options">
-<input type="radio" name="pcards-suite-colours" value="standard" <?php if(esc_attr(get_option('pcards-suite-colours')) == "standard") echo "checked"; ?>><label for="standard"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-standard-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">Standard Two Colour</span></label>
-</span>
-<span class="pcards-options">
-<input type="radio" name="pcards-suite-colours" value="4color" <?php if(esc_attr(get_option('pcards-suite-colours')) == "4color") echo "checked"; ?>><label for="4color"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-4color-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">Standard Four Colour</span></label>
-</span>
-<span class="pcards-options">
-<input type="radio" name="pcards-suite-colours" value="English-poker" <?php if(esc_attr(get_option('pcards-suite-colours')) == "English-poker") echo "checked"; ?>><label for="English-poker"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-English-poker-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">English Poker</span></label>
-</span>
-<span class="pcards-options">
-<input type="radio" name="pcards-suite-colours" value="German-skat" <?php if(esc_attr(get_option('pcards-suite-colours')) == "German-skat") echo "checked"; ?>><label for="German-skat"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-German-skat-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">German Skat</span></label>
-</span>
-<span class="pcards-options">
-<input type="radio" name="pcards-suite-colours" value="English-bridge" <?php if(esc_attr(get_option('pcards-suite-colours')) == "English-bridge") echo "checked"; ?>><label for="English-bridge"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-English-bridge-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">English Bridge</span></label>
-</span>
-<span class="pcards-options">
-<input type="radio" name="pcards-suite-colours" value="american" <?php if(esc_attr(get_option('pcards-suite-colours')) == "american") echo "checked"; ?>><label for="american"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-american-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">American Centennial, Mauger</span></label>
-</span>
-<span class="pcards-options">
-<input type="radio" name="pcards-suite-colours" value="Seminolewars-bridge" <?php if(esc_attr(get_option('pcards-suite-colours')) == "Seminolewars-bridge") echo "checked"; ?>><label for="Seminolewars-bridge"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-Seminolewars-bridge-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">Seminole Wars Bridge</span></label>
-</span>
-
-
+						<span class="pcards-options">
+						<input type="radio" name="pcards-suite-colours" value="standard" <?php if(esc_attr(get_option('pcards-suite-colours')) == "standard") echo "checked"; ?>><label for="standard"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-standard-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">Standard Two Colour</span></label>
+						</span>
+						<span class="pcards-options">
+						<input type="radio" name="pcards-suite-colours" value="4color" <?php if(esc_attr(get_option('pcards-suite-colours')) == "4color") echo "checked"; ?>><label for="4color"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-4color-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">Standard Four Colour</span></label>
+						</span>
+						<span class="pcards-options">
+						<input type="radio" name="pcards-suite-colours" value="English-poker" <?php if(esc_attr(get_option('pcards-suite-colours')) == "English-poker") echo "checked"; ?>><label for="English-poker"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-English-poker-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">English Poker</span></label>
+						</span>
+						<span class="pcards-options">
+						<input type="radio" name="pcards-suite-colours" value="German-skat" <?php if(esc_attr(get_option('pcards-suite-colours')) == "German-skat") echo "checked"; ?>><label for="German-skat"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-German-skat-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">German Skat</span></label>
+						</span>
+						<span class="pcards-options">
+						<input type="radio" name="pcards-suite-colours" value="English-bridge" <?php if(esc_attr(get_option('pcards-suite-colours')) == "English-bridge") echo "checked"; ?>><label for="English-bridge"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-English-bridge-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">English Bridge</span></label>
+						</span>
+						<span class="pcards-options">
+						<input type="radio" name="pcards-suite-colours" value="american" <?php if(esc_attr(get_option('pcards-suite-colours')) == "american") echo "checked"; ?>><label for="american"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-american-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">American Centennial, Mauger</span></label>
+						</span>
+						<span class="pcards-options">
+						<input type="radio" name="pcards-suite-colours" value="Seminolewars-bridge" <?php if(esc_attr(get_option('pcards-suite-colours')) == "Seminolewars-bridge") echo "checked"; ?>><label for="Seminolewars-bridge"><span class="pcblock pcblock-inline pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?> pcblock-Seminolewars-bridge-standard"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span><span class="pccard pccard-diams pccard-inline" title="King of Diamonds"><span class="pcrank">K</span><span class="pcsuite pcsuite-diams">&diams;</span></span><span class="pccard pccard-clubs pccard-inline" title="Eight of Clubs"><span class="pcrank">8</span><span class="pcsuite pcsuite-clubs">&clubs;</span></span><span class="pccard pccard-hearts pccard-inline" title="Two of Hearts"><span class="pcrank">2</span><span class="pcsuite pcsuite-hearts">&hearts;</span></span></span><br/><span class="pcards-colour-label">Seminole Wars Bridge</span></label>
+						</span>
 					</td>
 				</tr>
 				<tr valign="top">
-					<th scope="row">Style</th>
+					<th scope="row" class="pcards-th">Style</th>
 				</tr>
 				<tr valign="top">
 					<td>
 						<!-- style options -->
-<span class="pcards-options"><input type="radio" name="pcards-suite-style" value="standard" <?php if(esc_attr(get_option('pcards-suite-style')) == "standard") echo "checked"; ?>><label for="standard"><span class="pcblock pcblock-inline pcblock-<?php echo esc_attr(get_option('pcards-suite-colours')); ?>-standard pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?>"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span></span></label></span>
-<span class="pcards-options"><input type="radio" name="pcards-suite-style" value="reverse" <?php if(esc_attr(get_option('pcards-suite-style')) == "reverse") echo "checked"; ?>><label for="reverse"><span class="pcblock pcblock-inline pcblock-<?php echo esc_attr(get_option('pcards-suite-colours')); ?>-reverse pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?>"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span></span></label></span>
+						<span class="pcards-options"><input type="radio" name="pcards-suite-style" value="standard" <?php if(esc_attr(get_option('pcards-suite-style')) == "standard") echo "checked"; ?>><label for="standard"><span class="pcblock pcblock-inline pcblock-<?php echo esc_attr(get_option('pcards-suite-colours')); ?>-standard pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?>"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span></span></label></span>
+						<span class="pcards-options"><input type="radio" name="pcards-suite-style" value="reverse" <?php if(esc_attr(get_option('pcards-suite-style')) == "reverse") echo "checked"; ?>><label for="reverse"><span class="pcblock pcblock-inline pcblock-<?php echo esc_attr(get_option('pcards-suite-colours')); ?>-reverse pcblock-font-<?php echo esc_attr(get_option('pcards-font')); ?>"><span class="pccard pccard-spades pccard-inline" title="Ace of Spades"><span class="pcrank">A</span><span class="pcsuite pcsuite-spades">&spades;</span></span></span></label></span>
 					</td>
 				</tr>
 			</table>
