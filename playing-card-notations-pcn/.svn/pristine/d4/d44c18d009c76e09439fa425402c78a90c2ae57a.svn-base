@@ -41,6 +41,8 @@ You can use the shortcodes pcards or pcn to display cards and card hands in your
 ## Uninstall
 
 In the Plugins screen of your WordPress admin area, navigate to Playing Card Notations, click on Deactivate. On the refreshed screen, click on Delete.
+Note: You will lose all your questions if you uninstall the plugin. Take a backup of your data before you uninstall.
+
 
 ## Changelog
 
